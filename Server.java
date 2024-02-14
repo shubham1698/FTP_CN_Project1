@@ -12,71 +12,77 @@ public class Server {
 	String MESSAGE; // uppercase message send to the client
 	ObjectOutputStream out; // stream write to the socket
 	ObjectInputStream in; // stream read from the socket
-	FileOutputStream writer;
+
 	public void Server() {
 	}
 
 	void run(int portNumber) {
 		try {
-			writer = new FileOutputStream("disassembly.pptx");
+
 			// create a serversocket
 			sSocket = new ServerSocket(portNumber, 10);
 			// Wait for connection
 			System.out.println("Waiting for connection");
 			// accept a connection from the client
 			connection = sSocket.accept();
-			System.out.println("Connection received from " +
-					connection.getInetAddress().getHostName());
+			System.out.println("Connection received from " +connection.getInetAddress().getHostName());
+		
 			// initialize Input and Output streams
 			out = new ObjectOutputStream(connection.getOutputStream());
-			out.flush();
 			in = new ObjectInputStream(connection.getInputStream());
+
 			try {
 
-				byte[] buffer = new byte[1024];
-				int bytesRead;
-	
-				while ((bytesRead = in.read(buffer)) != -1) {
-					
-					writer.write(buffer, 0, bytesRead);
+				while (true) {
+					String command = (String) in.readObject();
+
+					if (command.trim().split("\\s+")[0].equals("2")) {
+						handleUploadFile(command.trim().split("\\s+")[1], in, out);
+					} else if (command.trim().split("\\s+")[0].equals("1")) {
+						handleDownloadFile(command.trim().split("\\s+")[1], in, out);
+					} else {
+						in.close();
+						out.close();
+						sSocket.close();
+					}
 				}
-				// while (true) {
-				// 	// receive the message sent from the client
-				// 	message = (String) in.readObject();
-				// 	// show the message to the user
-				// 	writer.write(message);
-				// 	System.out.println("Receive message: " + message);
-				// 	// Capitalize all letters in the message
-				// 	MESSAGE = message.toUpperCase();
-				// 	// send MESSAGE back to the client
-				// 	sendMessage(MESSAGE);
-				// }
 			} catch (Exception classnot) {
 				System.err.println("Data received in unknownformat");
 			}
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
-		} finally {
-			// Close connections
-			try {
-				in.close();
-				out.close();
-				sSocket.close();
-				writer.close();;
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
 		}
 	}
 
-	// send a message to the output stream
-	void sendMessage(String msg) {
+	void handleDownloadFile(String filename, ObjectInputStream in, ObjectOutputStream out) {
 		try {
-			out.writeObject(msg);
-			out.flush();
-			System.out.println("Send message: " + msg);
-		} catch (IOException ioException) {
-			ioException.printStackTrace();
+			FileInputStream reader = new FileInputStream(filename);
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+
+			while ((bytesRead = reader.read(buffer)) != -1) {
+				out.write(buffer, 0, bytesRead);
+				out.flush();	
+			}
+			out.writeObject("FileTransferComplete");
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());	
+		}
+	}
+
+	void handleUploadFile(String filename, ObjectInputStream in, ObjectOutputStream out) {
+		try {
+			FileOutputStream writer = new FileOutputStream("new" + filename, false);
+
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+
+			while ((bytesRead = in.read(buffer)) != -1) {
+				writer.write(buffer, 0, bytesRead);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 
@@ -86,9 +92,9 @@ public class Server {
 		if (args.length == 0) {
 			System.out.println("Please provide a port number for server to run on.");
 		} else {
-			portNum=args[0].trim();
+			portNum = args[0].trim();
 			Server server = new Server();
-			server.run(Integer.parseInt(portNum));			
+			server.run(Integer.parseInt(portNum));
 		}
 
 	}
