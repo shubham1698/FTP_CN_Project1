@@ -25,32 +25,46 @@ public class Server {
 			System.out.println("Waiting for connection");
 			// accept a connection from the client
 			connection = sSocket.accept();
-			System.out.println("Connection received from " +connection.getInetAddress().getHostName());
-		
+			System.out.println("Connection received from " + connection.getInetAddress().getHostName());
+
 			// initialize Input and Output streams
 			out = new ObjectOutputStream(connection.getOutputStream());
 			in = new ObjectInputStream(connection.getInputStream());
 
 			try {
-
-				while (true) {
+				boolean exit = true;
+				while (exit) {
 					String command = (String) in.readObject();
-
+					
 					if (command.trim().split("\\s+")[0].equals("2")) {
 						handleUploadFile(command.trim().split("\\s+")[1], in, out);
 					} else if (command.trim().split("\\s+")[0].equals("1")) {
 						handleDownloadFile(command.trim().split("\\s+")[1], in, out);
 					} else {
-						in.close();
-						out.close();
-						sSocket.close();
+						System.out.println("Server Shutting down...");
+						exit = false;
 					}
 				}
+				in.close();
+				out.close();
+				connection.close();
 			} catch (Exception classnot) {
-				System.err.println("Data received in unknownformat");
+				System.err.println("Data received in unknownformat" + classnot);
 			}
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
+		} finally {
+			// Close resources (streams and socket) in the finally block
+			try {
+				if (in != null)
+					in.close();
+				if (out != null)
+					out.close();
+				if (connection != null)
+					connection.close(); // Close the connection (socket)
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -62,12 +76,12 @@ public class Server {
 
 			while ((bytesRead = reader.read(buffer)) != -1) {
 				out.write(buffer, 0, bytesRead);
-				out.flush();	
+				out.flush();
 			}
 			out.writeObject("FileTransferComplete");
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println(e.getMessage());	
+			System.out.println(e.getMessage());
 		}
 	}
 
