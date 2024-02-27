@@ -61,10 +61,11 @@ public class Client {
 
 	// main method
 	public static void main(String args[]) {
+		Socket requestSocket=null; // socket connect to the server
+			ObjectOutputStream out=null; // stream write to the socket
+			ObjectInputStream in=null; // stream read from the socket
 		try {
-			Socket requestSocket; // socket connect to the server
-			ObjectOutputStream out; // stream write to the socket
-			ObjectInputStream in; // stream read from the socket
+			
 			String portNum = "";
 			if (args.length == 0) {
 				System.out.println("Please provide a port number for client.");
@@ -106,19 +107,27 @@ public class Client {
 							System.out.println("Exiting...");
 							exit = true;
 							out.writeObject("3 Exit");
-							in.close();
-							out.close();
-							requestSocket.close();
 						}
 							break;
 						default:
 							System.out.println("Invalid choice. Please select again.");
 					}
 				}
+				out.close();
+				in.close();
+				requestSocket.close();
 				scanner.close();
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+		}finally {
+			try {
+				if (out != null) out.close(); // Close streams in the finally block to ensure they are always closed
+				if (in != null) in.close();
+				if (requestSocket != null) requestSocket.close(); // Close socket in the finally block to ensure it's always closed
+			} catch (IOException e) {
+				System.out.println("Error closing resources: " + e.getMessage());
+			}
 		}
 	}
 
