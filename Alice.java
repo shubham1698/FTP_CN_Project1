@@ -35,7 +35,7 @@ public class Alice {
                             out.flush();
                             transferFile(MESSAGE.trim().split(" ")[2]);
                         } else {
-                            System.out.println("Alice: " + MESSAGE);
+                            System.out.println("Bob: " + MESSAGE);
                         }
                     }
                 } catch (Exception e) {

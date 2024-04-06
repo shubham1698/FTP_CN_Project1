@@ -28,7 +28,7 @@ public class Bob {
                     while (true) {
                         MESSAGE = (String) in.readObject();
                         if (!MESSAGE.equals("FILE")) {
-                            System.out.println("Bob: " + MESSAGE);
+                            System.out.println("Alice: " + MESSAGE);
                         } else {
                             System.out.println("Preparing to Receive File Transfer from Alice");
                             receiveFile();
