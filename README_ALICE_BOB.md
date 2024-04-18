@@ -13,29 +13,23 @@ Instructions for compiling and running the client-server application written in 
    - Open a terminal or command prompt on your system.
 
 # 2. **Navigate to Code Directory:**
-   - Navigate to the directory containing the `Alice.java` and `Bob.java` files.
+   - Navigate to the directory containing the `PeerChat.java` file.
 
 # 3. **Compile Alice Code:**
    - Run the following commands to compile the Alice code:
      
-     javac Alice.java
-     
-
-# 4. **Compile Client Code:**
-   - Run the following commands to compile the Bob code:
-     
-     javac Bob.java
-     
-
+     javac PeerChat.java
+   
 # **Running the Application:**
 
 # 1. **Start the Server:**
-   - After compiling the Alice and Bob code, follow the on-screen prompts to enable interaction between Alice and Bob
+   - After compiling the code, follow the on-screen prompts to enable interaction between Alice and Bob
+   java PeerChat <PortNumber> <otherUserName>
      
 
 # 2. **Transfer file  from Alice to Bob:**
    - For file tranfer from Alice to Bob ,on Bob command prompt enter the below command.
    
-     transfer filename <filename>
+     transfer <filename>
      
 ---
