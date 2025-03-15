@@ -1,4 +1,4 @@
-# FTP_CN_Project1
+# Java-Client-Server-App
 Project on FTP
 
 Instructions for compiling and running the client-server application written in Java:
